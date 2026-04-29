@@ -1,0 +1,201 @@
+/* ─── App root — defines CSS custom properties ───────────── */
+.app {
+  --card-bg: #1e1e2e;
+  --card-border: #4a4a6a;
+  --card-text: #cdd6f4;
+  --card-accent: #89b4fa;
+  --card-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 3rem 1.5rem;
+}
+
+/* ─── Typography ─────────────────────────────────────────── */
+h1 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e8e8ea;
+  text-align: center;
+  max-width: 600px;
+}
+
+.intro {
+  font-size: 0.9rem;
+  color: #a6adc8;
+  line-height: 1.6;
+  max-width: 600px;
+  text-align: center;
+}
+
+.intro code {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.8rem;
+  color: #89b4fa;
+}
+
+/* ─── Layout ─────────────────────────────────────────────── */
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 860px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: flex-start;
+  background: #13131a;
+  border: 1px solid #2a2a3e;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.column h2 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a6adc8;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Trigger button ─────────────────────────────────────── */
+button.trigger {
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #4a4a6a;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+button.trigger:hover {
+  background: #2a2a3e;
+}
+
+/* ─── Explanation text ───────────────────────────────────── */
+.explanation {
+  font-size: 0.82rem;
+  color: #6c7086;
+  line-height: 1.6;
+}
+
+.explanation code {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.78rem;
+  color: #89b4fa;
+}
+
+/* ─── Portal overlay ─────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+}
+
+/* ─── Shared card styles ─────────────────────────────────── */
+/*
+  Both .card--portal and .card--popover use these same rules.
+  The portal card is mounted at document.body — it is NOT a
+  descendant of .app — so it cannot see the custom properties
+  defined there and falls back to the hardcoded defaults.
+
+  The popover card stays in the .app subtree (the browser only
+  promotes it to the top layer visually), so it DOES inherit
+  the custom properties from .app.
+*/
+.card {
+  width: 280px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  /* These vars will resolve to the fallback on the portal card */
+  border-radius: var(--card-radius, 4px);
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--card-border, #cccccc);
+  color: var(--card-text, #111111);
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--card-accent, #0000ee);
+}
+
+.card p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.card ul {
+  font-size: 0.82rem;
+  color: inherit;
+}
+
+.card code {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+/* ─── Close button inside card ───────────────────────────── */
+.card-close {
+  align-self: flex-end;
+  padding: 0.3rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--card-border, #cccccc);
+  background: transparent;
+  color: var(--card-text, #111111);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.card-close:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+/* ─── Popover-specific positioning ───────────────────────── */
+/*
+  The browser UA stylesheet hides popovers via:
+    [popover]:not(:popover-open) { display: none }
+  But our display:flex on .card overrides that (user CSS > UA CSS).
+  Explicitly restore display:none so closed popovers are hidden.
+*/
+.card[popover]:not(:popover-open) {
+  display: none;
+}
+
+/*
+  Remove browser-default popover chrome, then re-apply our card
+  styles. The element stays in the .app DOM subtree so it keeps
+  the inherited CSS vars.
+*/
+.card[popover] {
+  position: fixed;
+  inset: unset;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  /* Re-declare border so the browser default doesn't win */
+  border: 1px solid var(--card-border, #cccccc);
+}
