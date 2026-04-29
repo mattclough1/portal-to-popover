@@ -21,19 +21,23 @@ export function PopoverCard({ open, onClose }: PopoverCardProps) {
     if (open) {
       el.showPopover();
     } else {
-      // hidePopover throws if already hidden — guard against that
       try { el.hidePopover(); } catch { /* already hidden */ }
     }
   }, [open]);
 
-  // Sync React state when the popover is dismissed natively (e.g. light-dismiss)
-  function handleToggle(e: React.SyntheticEvent<HTMLDivElement>) {
-    const event = e.nativeEvent as ToggleEvent;
-    if (event.newState === 'closed') onClose();
-  }
+  // Sync React state when the popover is dismissed natively (e.g. light-dismiss / Escape)
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    function handleToggle(e: Event) {
+      if ((e as ToggleEvent).newState === 'closed') onClose();
+    }
+    el.addEventListener('toggle', handleToggle);
+    return () => el.removeEventListener('toggle', handleToggle);
+  }, [onClose]);
 
   return (
-    <div ref={ref} popover="auto" className="card card--popover" onToggle={handleToggle}>
+    <div ref={ref} popover="auto" className="card card--popover">
       <CardContent />
       <button className="card-close" onClick={onClose}>Close</button>
     </div>
